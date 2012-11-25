@@ -201,6 +201,9 @@ class CyclicSolver():
         *maxinitharm* : zero harmonics above this one in the initial profile (acts to smooth/denoise) (optional)
         
         """
+
+	self.loadFile = loadFile
+
         hf_prev = np.ones((self.nchan,),dtype='complex')
         self.hf_prev = hf_prev
         
@@ -324,18 +327,7 @@ class CyclicSolver():
         #ps = self.data[isub,ipol] #dimensions will now be (nchan,nbin)
 
         if self.pp_ref.argmax() == 0:
-         #print "if 1111111111111"
-         ps = self.data[isub,ipol] #dimensions will now be (nchan,nbin)
-         cs = ps2cs(ps)
-
-         smeas = normalize_profile(cs.mean(0))
-         smeas[0] = 0.0
-         tempprofile = harm2phase(smeas)
-         maxarg = tempprofile.argmax()+1
-         ps = np.roll(ps,-maxarg,axis=1)
-         #self.pp_ref = np.roll(self.pp_ref,-maxarg)
-        else:
-         #print "else 22222222222"
+         print "if 1111111111111"
          ps = self.data[isub,ipol] #dimensions will now be (nchan,nbin)
          cs = ps2cs(ps)
 
@@ -345,6 +337,18 @@ class CyclicSolver():
          maxarg = tempprofile.argmax()+1
          ps = np.roll(ps,-maxarg,axis=1)
          self.pp_ref = np.roll(self.pp_ref,-maxarg)
+        else:
+         print "else 22222222222"
+         ps = self.data[isub,ipol] #dimensions will now be (nchan,nbin)
+         cs = ps2cs(ps)
+
+         smeas = normalize_profile(cs.mean(0))
+         smeas[0] = 0.0
+         tempprofile = harm2phase(smeas)
+         maxarg = tempprofile.argmax()+1
+         ps = np.roll(ps,-maxarg,axis=1)
+	 if self.loadFile == None:
+         	self.pp_ref = np.roll(self.pp_ref,-maxarg)
 
         cs = ps2cs(ps)
         cs = normalize_cs(cs,bw=self.bw,ref_freq=self.ref_freq)
